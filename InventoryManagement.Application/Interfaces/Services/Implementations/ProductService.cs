@@ -39,7 +39,7 @@ public class ProductService : IProductService
 
     public async Task<ProductDto?> GetByIdAsync(int id)
     {
-        var product =await _productRepository.GetByIdAsync(id);
+        var product = await _productRepository.GetByIdWithCategoryAsync(id);
 
         if (product is null)
             return null;

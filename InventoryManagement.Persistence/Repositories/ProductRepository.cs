@@ -13,10 +13,18 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
     {
     }
 
+    public async Task<Product?> GetByIdWithCategoryAsync(int id)
+    {
+        return await _context.Products
+            .Include(x => x.Category)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<List<Product>> GetProductsWithCategoryAsync()
     {
         return await _context.Products
             .Include(x => x.Category)
             .ToListAsync();
     }
+
 }

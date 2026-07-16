@@ -28,4 +28,14 @@ public class ProductsController : ControllerBase
         await _productService.CreateAsync(dto);
         return Ok();
     }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var product = await _productService.GetByIdAsync(id);
+
+        if (product == null)
+            return NotFound();
+
+        return Ok(product);
+    }
 }
