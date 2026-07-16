@@ -1,9 +1,11 @@
 using InventoryManagement.Application.Interfaces.Repositories;
 using InventoryManagement.Application.Interfaces.Services;
+using InventoryManagement.Application.Interfaces.UnitOfWork;
 using InventoryManagement.Application.Mappings;
 using InventoryManagement.Application.Services.Implementations;
 using InventoryManagement.Persistence.Context;
 using InventoryManagement.Persistence.Repositories;
+using InventoryManagement.Persistence.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
-
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
