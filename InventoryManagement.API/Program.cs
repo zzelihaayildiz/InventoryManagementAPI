@@ -1,7 +1,10 @@
 using InventoryManagement.Application.Interfaces.Repositories;
+using InventoryManagement.Application.Mappings;
 using InventoryManagement.Persistence.Context;
 using InventoryManagement.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+using InventoryManagement.Application.Interfaces.Services;
+using InventoryManagement.Application.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
