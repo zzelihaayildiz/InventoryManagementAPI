@@ -23,7 +23,7 @@ public class ProductService : IProductService
     {
         var product = _mapper.Map<Product>(dto);
 
-        product.CreatedDate = DateTime.Now;
+        product.CreatedDate = DateTime.UtcNow;
 
         await _productRepository.AddAsync(product);
 
