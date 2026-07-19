@@ -1,42 +1,50 @@
 ﻿using AutoMapper;
+using FluentValidation;
+using InventoryManagement.Application.Common.Exceptions;
 using InventoryManagement.Application.DTOs.Products;
 using InventoryManagement.Application.Interfaces.Repositories;
 using InventoryManagement.Application.Interfaces.Services;
 using InventoryManagement.Domain.Entities;
-using InventoryManagement.Application.Interfaces.UnitOfWork;
 
 namespace InventoryManagement.Application.Services.Implementations;
 
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IValidator<CreateProductDto> _createValidator;
 
     public ProductService(
         IProductRepository productRepository,
-        IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper,IValidator<CreateProductDto> createValidator)
     {
         _productRepository = productRepository;
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _createValidator = createValidator;
     }
 
-    public async Task CreateAsync(CreateProductDto dto)
+    public async Task<int> CreateAsync(CreateProductDto dto)
     {
+        var validationResult = await _createValidator.ValidateAsync(dto);
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var product = _mapper.Map<Product>(dto);
 
         product.CreatedDate = DateTime.UtcNow;
 
         await _productRepository.AddAsync(product);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _productRepository.SaveChangesAsync();
+
+        return product.Id;
     }
 
-    public async Task<List<ProductDto>> GetAllAsync()
+    public async Task<List<ProductDto>> GetAllAsync(ProductQueryParameters parameters)
     {
-        var products = await _productRepository.GetProductsWithCategoryAsync();
+        var products = await _productRepository.GetAllAsync(parameters);
 
         return _mapper.Map<List<ProductDto>>(products);
     }
@@ -48,5 +56,31 @@ public class ProductService : IProductService
             return null;
 
         return _mapper.Map<ProductDto>(product);
+    }
+
+    public async Task UpdateAsync(UpdateProductDto dto)
+    {
+        var product = await _productRepository.GetByIdAsync(dto.Id);
+
+        if (product is null)
+            throw new NotFoundException("Ürün bulunamadı.");
+
+        _mapper.Map(dto, product);
+
+        _productRepository.Update(product);
+
+        await _productRepository.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product is null)
+            throw new NotFoundException("Ürün Bulunamadı.");
+
+        _productRepository.Delete(product);
+
+        await _productRepository.SaveChangesAsync();
     }
 }

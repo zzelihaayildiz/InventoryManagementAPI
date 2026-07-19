@@ -1,4 +1,5 @@
-﻿using InventoryManagement.Application.Interfaces.Repositories;
+﻿using InventoryManagement.Application.DTOs.Products;
+using InventoryManagement.Application.Interfaces.Repositories;
 using InventoryManagement.Domain.Entities;
 using InventoryManagement.Persistence.Context;
 using InventoryManagement.Persistence.Repositories.Base;
@@ -20,11 +21,26 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<List<Product>> GetProductsWithCategoryAsync()
+    public async Task<List<Product>> GetAllAsync(ProductQueryParameters parameters)
     {
-        return await _context.Products
+        var query = _context.Products
             .Include(x => x.Category)
-            .ToListAsync();
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(parameters.Keyword))
+        {
+            query = query.Where(x =>
+                x.Name.Contains(parameters.Keyword) ||
+                x.Code.Contains(parameters.Keyword));
+        }
+
+        query = query.OrderBy(x => x.Id);
+
+        query = query.Skip((parameters.Page - 1) * parameters.PageSize)
+                     .Take(parameters.PageSize);
+
+        return await query.ToListAsync();
     }
 
 }

@@ -15,5 +15,8 @@ public class MappingProfile : Profile
                     : string.Empty));
 
         CreateMap<CreateProductDto, Product>();
+
+        CreateMap<UpdateProductDto, Product>();
+
     }
 }
