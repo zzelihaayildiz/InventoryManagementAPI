@@ -1,7 +1,7 @@
 ﻿using InventoryManagement.Application.DTOs.Products;
-using InventoryManagement.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using InventoryManagement.Application.Common;
+using InventoryManagement.Application.Interfaces.Services;
 
 namespace InventoryManagement.API.Controllers;
 

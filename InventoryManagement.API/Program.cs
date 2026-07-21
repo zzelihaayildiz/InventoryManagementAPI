@@ -5,10 +5,13 @@ using InventoryManagement.Application.Interfaces.Services;
 using InventoryManagement.Application.Mappings;
 using InventoryManagement.Application.Services.Implementations;
 using InventoryManagement.Application.Validators.Products;
+using InventoryManagement.Domain.Entities;
 using InventoryManagement.Persistence.Context;
+using InventoryManagement.Persistence.Identity;
 using InventoryManagement.Persistence.Repositories;
+using InventoryManagement.Persistence.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using InventoryManagement.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,20 +28,39 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("SqlServer"));
 });
 
+builder.Services
+    .AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
+
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
+
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    await IdentitySeeder.SeedAsync(userManager, roleManager);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
 app.UseHttpsRedirection();
 

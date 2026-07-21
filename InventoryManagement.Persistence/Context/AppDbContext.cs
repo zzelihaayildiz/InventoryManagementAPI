@@ -1,24 +1,30 @@
 ﻿using InventoryManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using InventoryManagement.Persistence.Identity;
 
-namespace InventoryManagement.Persistence.Context
+
+namespace InventoryManagement.Persistence.Context;
+
+public class AppDbContext : IdentityDbContext<AppUser>
 {
-    public class AppDbContext : DbContext
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
-        {
-        }
+    }
 
-        public DbSet<Product> Products => Set<Product>();
+    public DbSet<Product> Products => Set<Product>();
 
-        public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Category> Categories => Set<Category>();
 
-        public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<Product>()
+            .Property(x => x.Price)
+            .HasPrecision(18, 2);
     }
 }
