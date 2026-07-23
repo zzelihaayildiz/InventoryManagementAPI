@@ -1,6 +1,7 @@
 ﻿using InventoryManagement.Application.DTOs.Auth;
 using InventoryManagement.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace InventoryManagement.API.Controllers;
 
@@ -21,5 +22,13 @@ public class AuthController : ControllerBase
         await _authService.RegisterAsync(dto);
 
         return Ok("Kullanıcı oluşturuldu.");
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequestDto dto)
+    {
+        var result = await _authService.LoginAsync(dto);
+
+        return Ok(result);
     }
 }

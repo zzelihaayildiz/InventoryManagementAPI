@@ -1,10 +1,8 @@
 ﻿namespace InventoryManagement.Application.DTOs.Auth;
 
-public class LoginResponseDto
+public class TokenUserDto
 {
-    public string Token { get; set; } = string.Empty;
-
-    public DateTime Expiration { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     public string UserName { get; set; } = string.Empty;
 

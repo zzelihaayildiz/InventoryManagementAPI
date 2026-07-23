@@ -5,4 +5,5 @@ namespace InventoryManagement.Application.Interfaces.Services;
 public interface IAuthService
 {
     Task RegisterAsync(RegisterDto dto);
+    Task<LoginResponseDto> LoginAsync(LoginRequestDto dto);
 }
