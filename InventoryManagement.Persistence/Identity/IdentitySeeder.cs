@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using InventoryManagement.Application.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace InventoryManagement.Persistence.Identity;
 
@@ -8,14 +9,14 @@ public static class IdentitySeeder
         UserManager<AppUser> userManager,
         RoleManager<IdentityRole> roleManager)
     {
-        if(!await roleManager.RoleExistsAsync("Admin"))
+        if(!await roleManager.RoleExistsAsync(RoleNames.Admin))
         {
-            await roleManager.CreateAsync(new IdentityRole("Admin"));
+            await roleManager.CreateAsync(new IdentityRole(RoleNames.Admin));
         }
 
-        if(!await roleManager.RoleExistsAsync("Customer"))
+        if(!await roleManager.RoleExistsAsync(RoleNames.Customer))
         {
-            await roleManager.CreateAsync(new IdentityRole("Customer"));
+            await roleManager.CreateAsync(new IdentityRole(RoleNames.Customer));
         }
 
         var adminUser = await userManager.FindByEmailAsync("admin@inventory.com");
@@ -37,7 +38,7 @@ public static class IdentitySeeder
 
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(adminUser,"Admin");
+                await userManager.AddToRoleAsync(adminUser, RoleNames.Admin);
             }
 
 

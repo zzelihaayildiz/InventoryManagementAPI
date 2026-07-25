@@ -9,7 +9,6 @@ namespace InventoryManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -20,6 +19,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] ProductQueryParameters parameters)
     {
         var products = await _productService.GetAllAsync(parameters);
@@ -30,6 +30,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(int id)
     {
         var product = await _productService.GetByIdAsync(id);
@@ -43,6 +44,7 @@ public class ProductsController : ControllerBase
                 .SuccessResponse(product, "Ürün getirildi."));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateProductDto dto)
     {
@@ -54,6 +56,7 @@ public class ProductsController : ControllerBase
             ApiResponse<int>.SuccessResponse(id, "Ürün başarıyla oluşturuldu."));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task<IActionResult> Update(UpdateProductDto dto)
     {
@@ -64,6 +67,7 @@ public class ProductsController : ControllerBase
             "Ürün başarıyla kaydedildi."));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

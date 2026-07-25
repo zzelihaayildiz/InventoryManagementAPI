@@ -3,4 +3,5 @@
 public interface ITokenService
 {
     string CreateToken(TokenUserDto user);
+    string CreateRefreshToken();
 }
