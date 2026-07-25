@@ -2,17 +2,19 @@
 using System.Text.Json;
 using FluentValidation;
 using InventoryManagement.Application.Common.Exceptions;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Logging;
 
 namespace InventoryManagement.API.Middleware;
 
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
 
-    public ExceptionMiddleware(RequestDelegate next)
+    public ExceptionMiddleware(RequestDelegate next,ILogger<ExceptionMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -24,6 +26,10 @@ public class ExceptionMiddleware
 
         catch (NotFoundException ex)
         {
+            _logger.LogInformation(
+                "Resource not found. Path: {Path}",
+                context.Request.Path);
+
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             context.Response.ContentType = "application/json";
 
@@ -39,6 +45,11 @@ public class ExceptionMiddleware
 
         catch (ValidationException ex)
         {
+            _logger.LogWarning(
+                ex,
+                "Validation error on {Path}",
+                context.Request.Path);
+
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             context.Response.ContentType = "application/json";
 
@@ -55,6 +66,12 @@ public class ExceptionMiddleware
 
         catch (Exception ex)
         {
+            _logger.LogError(
+                ex,
+                "UnHandled exception. Path:{Path} Method:{Method}",
+                context.Request.Path,
+                context.Request.Method);
+
             context.Response.StatusCode =
                 (int)HttpStatusCode.InternalServerError;
 
