@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
+    <PreserveCompilationContext>true</PreserveCompilationContext>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -12,6 +12,8 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="FluentAssertions" Version="8.10.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.5.3" />
@@ -24,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\InventoryManagement.Application\InventoryManagement.Application.csproj" />
     <ProjectReference Include="..\InventoryManagement.Domain\InventoryManagement.Domain.csproj" />
+    <ProjectReference Include="..\InventoryManagement.API\InventoryManagement.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>
