@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using FluentValidation.Results;
+using InventoryManagement.Application.Common.Exceptions;
 using InventoryManagement.Application.DTOs.Products;
 using InventoryManagement.Application.Interfaces.Repositories;
 using InventoryManagement.Application.Services.Implementations;
 using InventoryManagement.Domain.Entities;
+using Microsoft.Extensions.Logging;
 using Moq;
-using FluentValidation.Results;
 using System.Runtime.InteropServices;
-using InventoryManagement.Application.Common.Exceptions;
 
 namespace InventoryManagement.Tests.Services;
 
@@ -18,20 +19,20 @@ public class ProductServiceTests
     private readonly Mock<IValidator<CreateProductDto>> _validatorMock;
 
     private readonly ProductService _productService;
+    private readonly Mock<ILogger<ProductService>> _loggerMock;
 
     public ProductServiceTests()
     {
         _productRepositoryMock = new Mock<IProductRepository>();
-
         _mapperMock = new Mock<IMapper>();
-
         _validatorMock = new Mock<IValidator<CreateProductDto>>();
-
+        _loggerMock = new Mock<ILogger<ProductService>>();
 
         _productService = new ProductService(
             _productRepositoryMock.Object,
             _mapperMock.Object,
-             _validatorMock.Object);
+             _validatorMock.Object,
+             _loggerMock.Object);
     }
 
     [Fact]

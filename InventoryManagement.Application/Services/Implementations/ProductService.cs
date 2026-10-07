@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Microsoft.Extensions.Logging;
+using AutoMapper;
 using FluentValidation;
 using InventoryManagement.Application.Common.Exceptions;
 using InventoryManagement.Application.DTOs.Products;
@@ -13,21 +14,31 @@ public class ProductService : IProductService
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
     private readonly IValidator<CreateProductDto> _createValidator;
+    private readonly ILogger<ProductService> _logger;
 
     public ProductService(
         IProductRepository productRepository,
-        IMapper mapper,IValidator<CreateProductDto> createValidator)
+        IMapper mapper,
+        IValidator<CreateProductDto> createValidator,
+        ILogger<ProductService> logger)
     {
         _productRepository = productRepository;
         _mapper = mapper;
         _createValidator = createValidator;
+        _logger = logger;
     }
 
     public async Task<int> CreateAsync(CreateProductDto dto)
     {
         var validationResult = await _createValidator.ValidateAsync(dto);
+
+        throw new Exception("Logging test exception");
         if (!validationResult.IsValid)
         {
+            _logger.LogWarning(
+                "Product creation validation failed. Code: {Code}",
+                dto.Code);
+
             throw new ValidationException(validationResult.Errors);
         }
 
@@ -38,6 +49,11 @@ public class ProductService : IProductService
         await _productRepository.AddAsync(product);
 
         await _productRepository.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Product created successfully. ProductId: {ProductId}, Code: {Code}",
+            product.Id,
+            product.Code);
 
         return product.Id;
     }
